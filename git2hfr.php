@@ -67,12 +67,12 @@ $posts=[
 
 // les cookies
 
-$cookies="md_user=roger21; md_passs=8499b50efcb388884c5c45cad94fd53f";
+$cookies="md_user=roger21; md_passs=";
 
 
 // la clé de sécurisation (le content-type du webkook doit être application/json)
 
-$key="Q3FZ7LrTzLvVKp4pfyRIPlBZoZicERU7NopZr1IXhVHKeg7G1glLUoLsEuQBSE7z2McgOdQxfco1RMyHXnFaVPqQqfctiYdcnhsQgNwb7FWUoEatkz6tFmbdmnwM2U4a0T3hU6wlPgZs0je5iE634LrbtR8o3uLdfFWlQIGBU2LaChbZCogtronilySJq6cR";
+$key="";
 
 
 
