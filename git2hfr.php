@@ -60,7 +60,7 @@ $posts=[
   [
     "source" => "https://raw.githubusercontent.com/XaaT/hfr-toulouse/master/post-2.txt",
     "formulaire" => "https://forum.hardware.fr/message.php?config=hfr.inc&cat=13&post=92651&numreponse=23723254&page=1&p=1&subcat=427&sondage=0&owntopic=0#formulaire",
-    "message" => "",
+    "message" => "prout",
   ],
 ];
 
