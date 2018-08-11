@@ -60,7 +60,13 @@ $posts=[
   [
     "source" => "https://raw.githubusercontent.com/XaaT/hfr-toulouse/master/post-2.txt",
     "formulaire" => "https://forum.hardware.fr/message.php?config=hfr.inc&cat=13&post=92651&numreponse=23723254&page=1&p=1&subcat=427&sondage=0&owntopic=0#formulaire",
-    "message" => "prout",
+    "message" => "pouet pouet
+
+COMMIT_MESSAGE
+
+prout prout
+
+caca caca",
   ],
 ];
 
@@ -81,7 +87,7 @@ $key="";
 /***********************************************/
 
 
-function secured(){
+function secured(&$commit_message=""){
   global $key, $talktome;
   if(!$key){
     $talktome.="<br>\npas de clé de sécurisation<br>\n<br>\n";
@@ -94,6 +100,12 @@ function secured(){
   }
   list($algo, $signature)=explode("=", $_SERVER["HTTP_X_HUB_SIGNATURE"]);
   $content=file_get_contents("php://input");
+  $content_array=json_decode($content, true);
+  //$talktome.="<br>\n<pre>".var_export($content_array, true)."</pre><br>\n<br>\n";
+  if(isset($content_array["head_commit"]["message"])){
+    $commit_message=$content_array["head_commit"]["message"];
+  }
+  //$talktome.="<br>\n<pre>".var_export($commit_message, true)."</pre><br>\n<br>\n";
   $hash=hash_hmac($algo, $content, $key);
   if(hash_equals($signature, $hash)){
     $talktome.="<br>\nsécurisation ok<br>\n<br>\n";
@@ -184,13 +196,13 @@ function postage($formulaire, $source, $new=false){
 
 
 $talktome="";
-if(secured()){
+if(secured($commit_message)){
   foreach($posts as $post){
     $source=file_get_contents($post["source"]);
     $formulaire=$post["formulaire"];
     postage($formulaire, $source);
     if(isset($post["message"]) && !empty($post["message"]) && !empty(trim($post["message"]))){
-      $source=trim($post["message"]);
+      $source=str_replace("COMMIT_MESSAGE", $commit_message, trim($post["message"]));
       $formulaire=preg_replace("/&numreponse=[0-9]+/", "", str_replace("#formulaire", "", $formulaire))."&new=0";
       //$talktome.="$formulaire<br>\n";
       postage($formulaire, $source, true);
