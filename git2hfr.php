@@ -89,6 +89,13 @@ $key="";
 
 function secured(&$commit_message=""){
   global $key, $talktome;
+  $content=file_get_contents("php://input");
+  $content_array=json_decode($content, true);
+  //$talktome.="<br>\n<pre>".var_export($content_array, true)."</pre><br>\n<br>\n";
+  if(isset($content_array["head_commit"]["message"])){
+    $commit_message=$content_array["head_commit"]["message"];
+  }
+  //$talktome.="<br>\n<pre>".var_export($commit_message, true)."</pre><br>\n<br>\n";
   if(!$key){
     $talktome.="<br>\npas de clé de sécurisation<br>\n<br>\n";
     return true;
@@ -99,13 +106,6 @@ function secured(&$commit_message=""){
     return false;
   }
   list($algo, $signature)=explode("=", $_SERVER["HTTP_X_HUB_SIGNATURE"]);
-  $content=file_get_contents("php://input");
-  $content_array=json_decode($content, true);
-  //$talktome.="<br>\n<pre>".var_export($content_array, true)."</pre><br>\n<br>\n";
-  if(isset($content_array["head_commit"]["message"])){
-    $commit_message=$content_array["head_commit"]["message"];
-  }
-  //$talktome.="<br>\n<pre>".var_export($commit_message, true)."</pre><br>\n<br>\n";
   $hash=hash_hmac($algo, $content, $key);
   if(hash_equals($signature, $hash)){
     $talktome.="<br>\nsécurisation ok<br>\n<br>\n";
