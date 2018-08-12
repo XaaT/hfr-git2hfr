@@ -37,3 +37,12 @@ Si la clé de sécurisation dans le script est vide il n'y a pas de vérificatio
 
 ## Le message du commit
 Le champ message du [tableau des posts](README.md#le-tableau-des-posts) permet d'insérrer le message du dernier commit inclus dans le push, pour cela il suffit de mettre la chaine `COMMIT_MESSAGE` dans le contenu du message d'annonce.
+
+## Limitations
+Le script ne gère que le content-type `application/json`. Il n'analyse pas non plus le message envoyé par GitHub (uniquement [la clé de sécurisation](README.md#la-s%C3%A9curisation-du-script) et [le message du commit](README.md#le-message-du-commit)) il est donc inutile de le faire s'executer sur autre chose que le `push event` par défaut.
+
+## La réponse du script
+Le script retourne une page HTML contenant soit les erreurs PHP rencontrées soit les informations suivante
+s :
+- la sécurisation : soit `pas de clé de sécurisation` si la clé n'est pas renseignée , soit `pas de signature` ou `sécurisation caca` si la comparaison des clés échoue ou n'est pas possible (la clé n'est pas envoyée dans les entêtes) ou soit `sécurisation ok` quand la comparaison des clés réussit ;
+- puis, pour autant de méssages édités ou postés : `Votre message a été édité avec succès !` ou `Votre réponse a été postée avec succès !` tel que renvoyé par hfr ou, le cas échéant, le message d'erreur renvoyé par hfr.
