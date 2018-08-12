@@ -44,5 +44,5 @@ Le script ne gère que le content-type `application/json`. Il n'analyse pas non 
 ## La réponse du script
 Le script retourne une page HTML contenant soit les erreurs PHP rencontrées soit les informations suivante
 s :
-- la sécurisation : soit `pas de clé de sécurisation` si la clé n'est pas renseignée , soit `pas de signature` ou `sécurisation caca` si la comparaison des clés échoue ou n'est pas possible (la clé n'est pas envoyée dans les entêtes) ou soit `sécurisation ok` quand la comparaison des clés réussit ;
-- puis, pour autant de méssages édités ou postés : `Votre message a été édité avec succès !` ou `Votre réponse a été postée avec succès !` tel que renvoyé par hfr ou, le cas échéant, le message d'erreur renvoyé par hfr.
+- la sécurisation : soit `pas de clé de sécurisation` si la clé n'est pas renseignée , soit `pas de signature` ou `sécurisation caca` si la comparaison des clés échoue ou n'est pas possible (la clé n'est pas envoyée dans les entêtes) ou soit `sécurisation ok` quand la comparaison des clés réussit
+- puis, pour autant de méssages édités ou postés : `Votre message a été édité avec succès !` ou `Votre réponse a été postée avec succès !` tel que renvoyé par hfr ou, le cas échéant, le message d'erreur renvoyé par hfr
