@@ -9,15 +9,15 @@ La fonctionalité première de git2hfr est d'être appelé via un [webhook](http
 
 ## Configuration
 **git2hfr** doit être configuré avant de pouvoir être utilisé, il y a trois paramètres :
-- le tableau des posts à mettre à jour, voir la section dédiée au [tableau des posts](README.md)
-- les cookies d'identification, voir la section sur la récupération des [cookies d'identification](README.md)
-- la clé de sécurisation du webhook qui est oprionnelle, voir la section sur la [sécurisation du script](README.md)
+- le tableau des posts à mettre à jour, voir la section dédiée au [tableau des posts](README.md#le-tableau-des-posts)
+- les cookies d'identification, voir la section sur la récupération des [cookies d'identification](README.md#les-cookies-didentification)
+- la clé de sécurisation du webhook qui est oprionnelle, voir la section sur la [sécurisation du script](README.md#la-s%C3%A9curisation-du-script)
 
 ## Le tableau des posts
 Le tableau des posts est un [tableau de tableaux en PHP](http://php.net/manual/en/language.types.array.php) qui regroupe les paramètres de chaque post à mettre à jour, pour chaque post il y a trois paramètres :
 - `"source"` : le lien vers le contenu qui doit remplacer le contenu actuel du post
 - `"formulaire"` : la lien vers la page d'édition normale du post
-- `"message"` : qui est **optionnel**, le contenu, directement en BBCode, du message d'annonce de la mise à jour du post, voir aussi la section sur le [message du commit](README.md)
+- `"message"` : qui est **optionnel**, le contenu, directement en BBCode, du message d'annonce de la mise à jour du post, voir aussi la section sur le [message du commit](README.md#le-message-du-commit)
 Dans le script, deux posts sont configurés pour l'exemple, il peut n'y en avoir qu'un ou beaucoup plus mais attention au temps d'execution du script dans ce cas.
 
 ## Les cookies d'identification
