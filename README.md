@@ -7,6 +7,8 @@ La fonctionalité première de git2hfr est d'être appelé via un [webhook](http
 ## Installation
 **git2hfr** a besoin d'un interpréteur PHP pour fonctionner et, pour être appelé depuis un webhook, d'être installé sur un serveur web accessible depuis les internets. Il nécessite au moins l'extension php-xml.
 
+Vous pouvez aussi demander à XaTriX d'héberger vos scripts, voir [le topic idoine](https://forum.hardware.fr/hfr/Programmation/Divers-6/automatique-participative-posts-sujet_146781_1.htm).
+
 ## Configuration
 **git2hfr** doit être configuré avant de pouvoir être utilisé, il y a trois paramètres :
 - le tableau des posts à mettre à jour, voir la section dédiée au [tableau des posts](README.md#le-tableau-des-posts)
