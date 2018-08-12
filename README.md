@@ -36,4 +36,4 @@ Le webhook peut aussi être sécurisé avec une clé dans le champ "secret" du w
 Si la clé de sécurisation dans le script est vide il n'y a pas de vérification de la clé envoyée ou non par GitHub.
 
 ## Le message du commit
-Le champ message du [tableau des posts](README.md#le-tableau-des-posts) permet d'insérrer le message du dernier commit inclus dans le push, pour cela il suffit de mettre la chaine COMMIT_MESSAGE dans le contenu du message d'annonce.
+Le champ message du [tableau des posts](README.md#le-tableau-des-posts) permet d'insérrer le message du dernier commit inclus dans le push, pour cela il suffit de mettre la chaine `COMMIT_MESSAGE` dans le contenu du message d'annonce.
