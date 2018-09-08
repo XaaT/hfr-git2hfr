@@ -24,7 +24,7 @@ Le tableau des posts est un [tableau de tableaux en PHP](http://php.net/manual/e
 Dans le script, deux posts sont configurés pour l'exemple, il peut n'y en avoir qu'un ou beaucoup plus mais attention au temps d'execution du script dans ce cas.
 
 ## Les cookies d'identification
-Les cookies d'identification sont les deux cookies envoyés par le forum : md_user et md_pass.
+Les cookies d'identification sont les deux cookies envoyés par le forum : `md_user` et `md_pass`.
 
 Pour récupérer ces cookies il s'uffit de regarder les entêtes d'une page du forum en étant connecté en utilisant les outils de développement du navigateur par exemple.
 
@@ -38,7 +38,7 @@ Le webhook peut aussi être sécurisé avec une clé dans le champ "secret" du w
 Si la clé de sécurisation dans le script est vide il n'y a pas de vérification de la clé envoyée ou non par GitHub.
 
 ## Le message du commit
-Le champ message du [tableau des posts](README.md#le-tableau-des-posts) permet d'insérrer le message du dernier commit inclus dans le push, pour cela il suffit de mettre la chaine `COMMIT_MESSAGE` qqpart dans le contenu du message d'annonce.
+Le champ `"message"` du [tableau des posts](README.md#le-tableau-des-posts) permet d'insérrer le message du dernier commit inclus dans le push, pour cela il suffit de mettre la chaine `COMMIT_MESSAGE` qqpart dans le contenu du message d'annonce.
 
 ## Limitations
 Le script ne gère que le content-type `application/json`. Il n'analyse pas non plus le message envoyé par GitHub (uniquement [la clé de sécurisation](README.md#la-s%C3%A9curisation-du-script) et [le message du commit](README.md#le-message-du-commit)) il est donc inutile de le faire s'executer sur autre chose que le `push event` par défaut.
