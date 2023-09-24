@@ -1,26 +1,30 @@
 import requests
 import re
+
 class HFR:
     LOGIN_URL = "https://forum.hardware.fr/login_validation.php?config=hfr.inc"
     MP_URL = "https://forum.hardware.fr/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={}&subcatgroup=0"
     BASE_MP_URL = "https://forum.hardware.fr/forum2.php?config=hfr.inc&cat=prive&post="
     RESPONSE_URL = "https://forum.hardware.fr/bddpost.php"
+
     def __init__(self):
         self.session = requests.Session()
+
     def connect(self, pseudo, password):
-        self.pseudo = pseudo,
+        self.pseudo = pseudo
         self.password = password
-        form_data = {'pseudo': pseudo, 'password': password}
-        self.session.post(HFR.LOGIN_URL, data=form_data)
-    def send_new_MP(self, dest, sujet, content):
-        # get hash from page
-        response = self.session.get(HFR.MP_URL.format(dest))
+        form_data = {"pseudo": pseudo, "password": password}
+        self.session.post(self.LOGIN_URL, data=form_data)
+
+    def send_new_MP(self, dest, subject, content):
+        # Get hash from page
+        response = self.session.get(self.MP_URL.format(dest))
         html = response.text
-        r = re.search("hash_check.*?value=\"([a-z0-9]*)\"", html)
-        h = r.group(1)
-        print("Hash: {}".format(h))
+        hash = re.search(r"hash_check.*?value=\"([a-z0-9]*)\"", html).group(1)
+
+        # Build post data
         post_data = {
-            "hash_check": h,
+            "hash_check": hash,
             "parents": "",
             "post": "",
             "stickold": "",
@@ -39,7 +43,7 @@ class HFR:
             "pseudo": self.pseudo,
             "password": self.password,
             "dest": dest,
-            "sujet": sujet,
+            "sujet": subject,
             "MsgIcon": "1",
             "search_smilies": "",
             "ColorUsedMem": "",
@@ -48,9 +52,12 @@ class HFR:
             "submit": "Valider+votre+message",
             "signature": "1"
         }
-        response = self.session.post(HFR.RESPONSE_URL, data=post_data)
+
+        # Send MP
+        response = self.session.post(self.RESPONSE_URL, data=post_data)
         print(response.status_code)
+
 if __name__ == "__main__":
     h = HFR()
-    h.connect("XaTriX", "1234" )
-    h.send_new_MP("garath_", "Test script", "ça marche gros" )
+    h.connect("XaTriX", "1234")
+    h.send_new_MP("garath_", "Test script", "ça marche gros")
