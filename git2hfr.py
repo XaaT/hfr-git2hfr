@@ -1,5 +1,25 @@
 import requests
 import re
+import os
+
+# Environment variables handling
+env_vars_list = ["HFR_LOGIN", "HFR_PASSWD"]
+env_vars_unset = []
+env_vars_dict = {}
+
+for env_variable in env_vars_list:
+    env_value = os.getenv(env_variable)
+    if env_value is not None:
+        env_vars_dict[env_value] = env_value
+    else:
+        env_vars_unset.append(env_variable)
+
+if len(env_vars_unset) == 0:
+    print("[INFO] All environment variables are set")
+else:
+    unset_vars = ', '.join(env_vars_unset)
+    print(f"[ERROR] The following variable(s) are not set: {unset_vars}")
+    exit(1)
 
 class HFR:
     LOGIN_URL = "https://forum.hardware.fr/login_validation.php?config=hfr.inc"
@@ -59,5 +79,5 @@ class HFR:
 
 if __name__ == "__main__":
     h = HFR()
-    h.connect("XaTriX", "1234")
-    h.send_new_MP("garath_", "Test script", "ça marche gros")
+    h.connect(HFR_LOGIN, HFR_PASSWD)
+    h.send_new_MP("Ximothov", "Test script", "ça marche gros")
