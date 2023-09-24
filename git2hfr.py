@@ -16,6 +16,7 @@ for env_variable in env_vars_list:
 
 if len(env_vars_unset) == 0:
     print("[INFO] All environment variables are set")
+    exit(0)
 else:
     unset_vars = ', '.join(env_vars_unset)
     print(f"[ERROR] The following variable(s) are not set: {unset_vars}")
@@ -35,6 +36,18 @@ class HFR:
         self.password = password
         form_data = {"pseudo": pseudo, "password": password}
         self.session.post(self.LOGIN_URL, data=form_data)
+
+    def _hash_page():
+        # TODO: Handler for get hash and page/post data
+
+    def send_notification():
+        # TODO: Handler for sending notification
+        # - Either to topic (new message)
+        # - Either private (either new private message or using last known conversation)
+
+    def edit_post():
+        # TODO: Handler for editing post
+        # - Either one or multiple messages (first post(s))
 
     def send_new_MP(self, dest, subject, content):
         # Get hash from page
@@ -81,3 +94,4 @@ if __name__ == "__main__":
     h = HFR()
     h.connect(HFR_LOGIN, HFR_PASSWD)
     h.send_new_MP("Ximothov", "Test script", "ça marche gros")
+    # TODO: Add options
