@@ -114,7 +114,7 @@ class HFR:
             "owntopic": "0",
             "config": "hfr.inc",
             "pseudo": self.pseudo,
-            "password": self.password,
+            "password": "",
             "dest": dest,
             "sujet": subject,
             "MsgIcon": "1",
