@@ -4,20 +4,25 @@ import os
 from bs4 import BeautifulSoup
 
 # Environment variables handling
-env_vars_list = ["HFR_LOGIN", "HFR_PASSWD"]
+env_vars_list = [
+    "HFR_LOGIN",
+    "HFR_PASSWD"
+]
 env_vars_unset = []
 env_vars_dict = {}
 
 for env_variable in env_vars_list:
     env_value = os.getenv(env_variable)
     if env_value is not None:
-        env_vars_dict[env_value] = env_value
+        env_vars_dict[env_variable] = env_value
     else:
         env_vars_unset.append(env_variable)
 
 if len(env_vars_unset) == 0:
+    for var_name in env_vars_list:
+        globals()[var_name] = env_vars_dict.get(var_name)
     print("[INFO] All environment variables are set")
-    exit(0)
+    
 else:
     unset_vars = ', '.join(env_vars_unset)
     print(f"[ERROR] The following variable(s) are not set: {unset_vars}")
