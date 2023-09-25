@@ -31,11 +31,45 @@ class HFR:
     def __init__(self):
         self.session = requests.Session()
 
-    def connect(self, pseudo, password):
-        self.pseudo = pseudo
-        self.password = password
-        form_data = {"pseudo": pseudo, "password": password}
-        self.session.post(self.LOGIN_URL, data=form_data)
+    def login(self, pseudo, password):
+        form_data = {
+            "pseudo": pseudo,
+            "password": password
+        }
+
+        try:
+            response = self.session.post(self.LOGIN_URL, data=form_data)
+            response.raise_for_status()
+
+            if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
+                print("Login failed: Invalid username or password.")
+                return
+            elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
+                profile_response = self.session.get("https://forum.hardware.fr/user/editprofil.php?config=hardwarefr.inc")
+                profile_response.raise_for_status()
+
+                soup = BeautifulSoup(profile_response.text, 'html.parser')
+                pseudo_label = soup.find('td', class_='profilCase2', string=lambda s: 'Pseudo' in s)
+                if pseudo_label:
+                    profile_pseudo = pseudo_label.find_next_sibling('td').text.strip()
+
+                    if profile_pseudo == pseudo:
+                        print("Connection successful!")
+                        self.pseudo = pseudo
+                        return
+                    else:
+                        print("Login seems successful, but username mismatch detected.")
+                        return
+                else:
+                    print("Failed to retrieve username from profile page. Login status unknown.")
+                    return
+
+            else:
+                print("Unexpected response received. Login status unknown.")
+                return
+
+        except requests.RequestException as e:
+            raise ConnectionError(f"Failed to connect: {str(e)}")
 
     def _hash_page():
         # TODO: Handler for get hash and page/post data
@@ -92,6 +126,6 @@ class HFR:
 
 if __name__ == "__main__":
     h = HFR()
-    h.connect(HFR_LOGIN, HFR_PASSWD)
+    h.login(HFR_LOGIN, HFR_PASSWD)
     h.send_new_MP("Ximothov", "Test script", "ça marche gros")
     # TODO: Add options
