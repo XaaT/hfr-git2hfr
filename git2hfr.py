@@ -3,32 +3,30 @@ import re
 import os
 from bs4 import BeautifulSoup
 
-# Environment variables handling
-env_vars_list = [
-    "HFR_LOGIN",
-    "HFR_PASSWD"
-]
-env_vars_unset = []
-env_vars_dict = {}
+class Config:
+    def __init__(self):
+        self.env_vars_list = [
+            "HFR_LOGIN",
+            "HFR_PASSWD"
+        ]
+        self.env_vars = self._get_env_vars()
 
-for env_variable in env_vars_list:
-    env_value = os.getenv(env_variable)
-    if env_value is not None:
-        env_vars_dict[env_variable] = env_value
-    else:
-        env_vars_unset.append(env_variable)
+    def _get_env_vars(self):
+        env_vars_dict = {}
 
-if len(env_vars_unset) == 0:
-    for var_name in env_vars_list:
-        globals()[var_name] = env_vars_dict.get(var_name)
-    print("[INFO] All environment variables are set")
-    
-else:
-    unset_vars = ', '.join(env_vars_unset)
-    print(f"[ERROR] The following variable(s) are not set: {unset_vars}")
-    exit(1)
+        for var in self.env_vars_list:
+            value = os.getenv(var)
+            if value:
+                env_vars_dict[var] = value
+            else:
+                raise EnvironmentError(f"Environment variable {var} is not set.")
 
-class HFR:
+        return env_vars_dict
+
+    def get(self, key):
+        return self.env_vars.get(key)
+
+class Hfr:
     LOGIN_URL = "https://forum.hardware.fr/login_validation.php?config=hfr.inc"
     MP_URL = "https://forum.hardware.fr/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={}&subcatgroup=0"
     BASE_MP_URL = "https://forum.hardware.fr/forum2.php?config=hfr.inc&cat=prive&post="
@@ -36,6 +34,7 @@ class HFR:
 
     def __init__(self):
         self.session = requests.Session()
+        self.is_authenticated = False
 
     def login(self, pseudo, password):
         form_data = {
@@ -48,7 +47,6 @@ class HFR:
             response.raise_for_status()
 
             if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
-                print("Login failed: Invalid username or password.")
                 return
             elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
                 profile_response = self.session.get("https://forum.hardware.fr/user/editprofil.php?config=hardwarefr.inc")
@@ -62,6 +60,7 @@ class HFR:
                     if profile_pseudo == pseudo:
                         print("Connection successful!")
                         self.pseudo = pseudo
+                        self.is_authenticated = True
                         return
                     else:
                         print("Login seems successful, but username mismatch detected.")
@@ -131,7 +130,16 @@ class HFR:
         print(response.status_code)
 
 if __name__ == "__main__":
-    h = HFR()
-    h.login(HFR_LOGIN, HFR_PASSWD)
-    h.send_new_MP("Ximothov", "Test script", "ça marche gros")
-    # TODO: Add options
+    try:
+        config = Config()
+        h = Hfr()
+        h.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
+
+        if not h.is_authenticated:  # vérification de l'authentification
+            print("Authentication failed. Exiting script.")
+            exit(1)
+
+        h.send_new_MP("Ximothov", "Test script", "ça marche gros")
+    except EnvironmentError as e:
+        print(e)
+        exit(1)
