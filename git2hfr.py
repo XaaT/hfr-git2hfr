@@ -1,6 +1,7 @@
 import requests
 import re
 import os
+from bs4 import BeautifulSoup
 
 # Environment variables handling
 env_vars_list = ["HFR_LOGIN", "HFR_PASSWD"]
