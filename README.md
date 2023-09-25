@@ -1,10 +1,6 @@
 # git2hfr
 
-* Réécriture from scratch en Python 3 pour être utilisé avec GitHub Actions
-
-## Finalité
-
-* TODO
+* Réécriture en Python avec compatibilité GitHub Actions et ajout de fonctionnalités
 
 ## Méthode
 
@@ -19,7 +15,3 @@
         ```
         > [!NOTE]
         > Pour ne pas garder en mémoire (`history`) un secret : ajouter un espace avant la commande `export`. Exemple : ` export HFR_PASSWD=UnMouton`
-
-### Options
-
-* TODO
