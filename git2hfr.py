@@ -58,23 +58,23 @@ class Hfr:
                     profile_pseudo = pseudo_label.find_next_sibling('td').text.strip()
 
                     if profile_pseudo == pseudo:
-                        print("Connection successful!")
+                        print("[INFO] Connection successful!")
                         self.pseudo = pseudo
                         self.is_authenticated = True
                         return
                     else:
-                        print("Login seems successful, but username mismatch detected.")
+                        print("[INFO] Login seems successful, but username mismatch detected.")
                         return
                 else:
-                    print("Failed to retrieve username from profile page. Login status unknown.")
+                    print("[WARNING] Failed to retrieve username from profile page. Login status unknown.")
                     return
 
             else:
-                print("Unexpected response received. Login status unknown.")
+                print("[WARNING] Unexpected response received. Login status unknown.")
                 return
 
         except requests.RequestException as e:
-            raise ConnectionError(f"Failed to connect: {str(e)}")
+            raise ConnectionError(f"[ERROR] Failed to connect: {str(e)}")
 
     #def _hash_page() :
         # TODO: Handler to obtain page/post hash and data
@@ -136,7 +136,7 @@ if __name__ == "__main__":
         hfr.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
 
         if not hfr.is_authenticated:  # vérification de l'authentification
-            print("Authentication failed. Exiting script.")
+            print("[ERROR] Authentication failed. Exiting script.")
             exit(1)
 
         hfr.send_new_MP("Ximothov", "Test script", "ça marche gros")
