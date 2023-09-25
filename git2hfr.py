@@ -71,17 +71,17 @@ class HFR:
         except requests.RequestException as e:
             raise ConnectionError(f"Failed to connect: {str(e)}")
 
-    def _hash_page():
-        # TODO: Handler for get hash and page/post data
+    #def _hash_page() :
+        # TODO: Handler to obtain page/post hash and data
 
-    def send_notification():
-        # TODO: Handler for sending notification
-        # - Either to topic (new message)
-        # - Either private (either new private message or using last known conversation)
+    #def send_notification() :
+        # TODO : Handler for sending notifications
+        # - Either to subject (new message)
+        # - Either private (new private message or use of last known conversation)
 
-    def edit_post():
-        # TODO: Handler for editing post
-        # - Either one or multiple messages (first post(s))
+    #def edit_post() :
+        # TODO: Post editing manager
+        # - Either one or more posts (first post(s))
 
     def send_new_MP(self, dest, subject, content):
         # Get hash from page
