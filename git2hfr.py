@@ -132,14 +132,14 @@ class Hfr:
 if __name__ == "__main__":
     try:
         config = Config()
-        h = Hfr()
-        h.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
+        hfr = Hfr()
+        hfr.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
 
-        if not h.is_authenticated:  # vérification de l'authentification
+        if not hfr.is_authenticated:  # vérification de l'authentification
             print("Authentication failed. Exiting script.")
             exit(1)
 
-        h.send_new_MP("Ximothov", "Test script", "ça marche gros")
+        hfr.send_new_MP("Ximothov", "Test script", "ça marche gros")
     except EnvironmentError as e:
         print(e)
         exit(1)
