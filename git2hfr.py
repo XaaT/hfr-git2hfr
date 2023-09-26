@@ -76,6 +76,14 @@ class Hfr:
         except requests.RequestException as e:
             raise ConnectionError(f"[ERROR] Failed to connect: {str(e)}")
 
+    def get_github_file_content(self, repo_url):
+        if 'github.com' in repo_url and 'raw' not in repo_url:
+            repo_url = repo_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/')
+        
+        response = requests.get(repo_url)
+        response.raise_for_status()
+        return response.text
+    
     #def _hash_page() :
         # TODO: Handler to obtain page/post hash and data
 
