@@ -28,10 +28,7 @@ class Config:
         return self.env_vars.get(key)
 
 class Hfr:
-    LOGIN_URL = "https://forum.hardware.fr/login_validation.php?config=hfr.inc"
-    MP_URL = "https://forum.hardware.fr/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={}&subcatgroup=0"
-    BASE_MP_URL = "https://forum.hardware.fr/forum2.php?config=hfr.inc&cat=prive&post="
-    RESPONSE_URL = "https://forum.hardware.fr/bddpost.php"
+    BASE_URL = "https://forum.hardware.fr"
 
     def __init__(self):
         self.session = requests.Session()
@@ -41,13 +38,13 @@ class Hfr:
         form_data = { "pseudo": pseudo, "password": password }
 
         try:
-            response = self.session.post(self.LOGIN_URL, data=form_data)
+            response = self.session.post(f"{self.BASE_URL}/login_validation.php?config=hfr.inc", data=form_data)
             response.raise_for_status()
 
             if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
                 print("[ERROR] Invalid credentials.")
             elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
-                profile_response = self.session.get("https://forum.hardware.fr/user/editprofil.php?config=hardwarefr.inc")
+                profile_response = self.session.get(f"{self.BASE_URL}/user/editprofil.php?config=hardwarefr.inc")
                 profile_response.raise_for_status()
 
                 soup = BeautifulSoup(profile_response.text, 'html.parser')
@@ -87,7 +84,7 @@ class Hfr:
 
     def send_new_MP(self, dest, subject, content):
         # Get hash from page
-        response = self.session.get(self.MP_URL.format(dest))
+        response = self.session.get(f"{self.BASE_URL}/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={dest}&subcatgroup=0".format(dest))
         html = response.text
         hash = re.search(r"hash_check.*?value=\"([a-z0-9]*)\"", html).group(1)
 
@@ -123,7 +120,7 @@ class Hfr:
         }
 
         # Send MP
-        response = self.session.post(self.RESPONSE_URL, data=post_data)
+        response = self.session.post(f"{self.BASE_URL}/bddpost.php", data=post_data)
         print(response.status_code)
 
 if __name__ == "__main__":
