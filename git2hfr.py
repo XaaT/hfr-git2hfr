@@ -120,45 +120,14 @@ class Hfr:
         # - Either one or more posts (first post(s))
 
     def send_new_MP(self, dest, subject, content):
-        # Get hash from page
-        response = self.session.get(f"{self.BASE_URL}/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={dest}&subcatgroup=0".format(dest))
-        html = response.text
-        hash = re.search(r"hash_check.*?value=\"([a-z0-9]*)\"", html).group(1)
-
-        # Build post data
-        post_data = {
-            "hash_check": hash,
-            "parents": "",
-            "post": "",
-            "stickold": "",
-            "new": "0",
-            "cat": "prive",
-            "numreponse": "",
-            "numrep": "",
-            "page": "1",
-            "verifrequet": "1100",
-            "p": "1",
-            "sondage": "0",
-            "sond": "0",
-            "cache": "",
-            "owntopic": "0",
-            "config": "hfr.inc",
-            "pseudo": self.pseudo,
-            "password": "",
-            "dest": dest,
-            "sujet": subject,
-            "MsgIcon": "1",
-            "search_smilies": "",
-            "ColorUsedMem": "",
-            "content_form": content,
-            "wysiwyg": "0",
-            "submit": "Valider+votre+message",
-            "signature": "1"
-        }
-
-        # Send MP
+        hash_value = self._get_hash_from_page(f"{self.BASE_URL}/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={dest}&subcatgroup=0".format(dest))
+        post_data = self._build_post_data(dest, subject, content, hash_value)
+        
         response = self.session.post(f"{self.BASE_URL}/bddpost.php", data=post_data)
-        print(response.status_code)
+        if response.status_code == 200:
+            print("Message sent successfully!")
+        else:
+            print(f"Failed to send message. Received status code: {response.status_code}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
