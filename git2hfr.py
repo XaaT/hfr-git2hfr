@@ -37,41 +37,29 @@ class Hfr:
         self.is_authenticated = False
 
     def login(self, pseudo, password):
-        form_data = {
-            "pseudo": pseudo,
-            "password": password
-        }
+        form_data = { "pseudo": pseudo, "password": password }
 
         try:
             response = self.session.post(self.LOGIN_URL, data=form_data)
             response.raise_for_status()
 
             if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
-                return
+                print("[ERROR] Invalid credentials.")
             elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
                 profile_response = self.session.get("https://forum.hardware.fr/user/editprofil.php?config=hardwarefr.inc")
                 profile_response.raise_for_status()
 
                 soup = BeautifulSoup(profile_response.text, 'html.parser')
                 pseudo_label = soup.find('td', class_='profilCase2', string=lambda s: 'Pseudo' in s)
-                if pseudo_label:
-                    profile_pseudo = pseudo_label.find_next_sibling('td').text.strip()
 
-                    if profile_pseudo == pseudo:
-                        print("[INFO] Connection successful!")
-                        self.pseudo = pseudo
-                        self.is_authenticated = True
-                        return
-                    else:
-                        print("[INFO] Login seems successful, but username mismatch detected.")
-                        return
+                if pseudo_label and pseudo_label.find_next_sibling('td').text.strip() == pseudo:
+                    print("[INFO] Connection successful!")
+                    self.pseudo = pseudo
+                    self.is_authenticated = True
                 else:
-                    print("[WARNING] Failed to retrieve username from profile page. Login status unknown.")
-                    return
-
+                    print("[WARNING] Login issues detected.")
             else:
                 print("[WARNING] Unexpected response received. Login status unknown.")
-                return
 
         except requests.RequestException as e:
             raise ConnectionError(f"[ERROR] Failed to connect: {str(e)}")
@@ -79,11 +67,11 @@ class Hfr:
     def get_github_file_content(self, repo_url):
         if 'github.com' in repo_url and 'raw' not in repo_url:
             repo_url = repo_url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/')
-        
+
         response = requests.get(repo_url)
         response.raise_for_status()
         return response.text
-    
+
     #def _hash_page() :
         # TODO: Handler to obtain page/post hash and data
 
@@ -143,7 +131,7 @@ if __name__ == "__main__":
         hfr = Hfr()
         hfr.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
 
-        if not hfr.is_authenticated:  # vérification de l'authentification
+        if not hfr.is_authenticated:
             print("[ERROR] Authentication failed. Exiting script.")
             exit(1)
 
