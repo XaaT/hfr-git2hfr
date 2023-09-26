@@ -70,8 +70,14 @@ class Hfr:
         response.raise_for_status()
         return response.text
 
-    #def _hash_page() :
-        # TODO: Handler to obtain page/post hash and data
+    def _get_hash_from_page(self, url):
+        response = self.session.get(url)
+        response.raise_for_status()  # Ensure a successful response
+        html = response.text
+        match = re.search(r"hash_check.*?value=\"([a-z0-9]*)\"", html)
+        if not match:
+            raise ValueError("Hash value not found in the provided page.")
+        return match.group(1)
 
     #def send_notification() :
         # TODO : Handler for sending notifications
