@@ -2,6 +2,7 @@ import requests
 import re
 import os
 from bs4 import BeautifulSoup
+import argparse
 
 class Config:
     def __init__(self):
@@ -126,6 +127,13 @@ class Hfr:
         print(response.status_code)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
+    parser.add_argument('--user', type=str, required=True, help='Recipient username')
+    parser.add_argument('--subject', type=str, required=True, help='Message subject')
+    parser.add_argument('--content', type=str, required=True, help='Message content')
+
+    args = parser.parse_args()
+
     try:
         config = Config()
         hfr = Hfr()
@@ -135,7 +143,7 @@ if __name__ == "__main__":
             print("[ERROR] Authentication failed. Exiting script.")
             exit(1)
 
-        hfr.send_new_MP("Ximothov", "Test script", "ça marche gros")
+        hfr.send_new_MP(args.user, args.subject, args.content)
     except EnvironmentError as e:
         print(e)
         exit(1)
