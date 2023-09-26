@@ -79,6 +79,37 @@ class Hfr:
             raise ValueError("Hash value not found in the provided page.")
         return match.group(1)
 
+    def _build_post_data(self, dest, subject, content, hash_value):
+        return {
+            "hash_check": hash_value,
+            "parents": "",
+            "post": "",
+            "stickold": "",
+            "new": "0",
+            "cat": "prive",
+            "numreponse": "",
+            "numrep": "",
+            "page": "1",
+            "verifrequet": "1100",
+            "p": "1",
+            "sondage": "0",
+            "sond": "0",
+            "cache": "",
+            "owntopic": "0",
+            "config": "hfr.inc",
+            "pseudo": self.pseudo,
+            "password": "",
+            "dest": dest,
+            "sujet": subject,
+            "MsgIcon": "1",
+            "search_smilies": "",
+            "ColorUsedMem": "",
+            "content_form": content,
+            "wysiwyg": "0",
+            "submit": "Valider+votre+message",
+            "signature": "1"
+        }
+
     #def send_notification() :
         # TODO : Handler for sending notifications
         # - Either to subject (new message)
