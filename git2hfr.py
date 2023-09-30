@@ -37,6 +37,34 @@ class Hfr:
         self.session = requests.Session()
         self.is_authenticated = False
 
+    def _get_hash_value(self):
+        if self.is_authenticated == True:
+            profile_response = self.session.get(f"{self.BASE_URL}/user/editprofil.php?config=hardwarefr.inc")
+            soup = BeautifulSoup(profile_response.text, 'html.parser')
+            hash_input = soup.find('input', {'name': 'hash_check'})
+            if hash_input:
+                self.hash_value = hash_input['value']
+                print(f"[INFO] Variable hash_value has been set: {self.hash_value}")
+            else:
+                print("[ERROR] Could not extract hash value.")
+                sys.exit(1)
+        else:
+            print("[ERROR] User is not authentificated")
+            sys.exit(1)
+
+    def _get_category_values(self):
+        try:
+            response = self.session.get(f"{self.BASE_URL}/search.php?config=hfr.inc&cat=&subcat=")
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+            category_values = [option['value'] for option in soup.select('select[name="cat"] option') if option['value']]
+            return category_values
+
+        except requests.RequestException as e:
+            print(f"[ERROR] Failed to get category values: {str(e)}")
+            return []
+
     def login(self, pseudo, password):
         form_data = { "pseudo": pseudo, "password": password }
 
@@ -72,15 +100,6 @@ class Hfr:
         response = requests.get(repo_url)
         response.raise_for_status()
         return response.text
-
-    def _get_hash_from_page(self, url):
-        response = self.session.get(url)
-        response.raise_for_status()  # Ensure a successful response
-        html = response.text
-        match = re.search(r"hash_check.*?value=\"([a-z0-9]*)\"", html)
-        if not match:
-            raise ValueError("Hash value not found in the provided page.")
-        return match.group(1)
 
     def _build_post_data(self, dest, subject, content, hash_value):
         return {
