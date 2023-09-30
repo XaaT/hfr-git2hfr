@@ -96,15 +96,25 @@ class Hfr:
         response.raise_for_status()
         return response.text
 
-    def _build_post_data(self, dest, subject, content, hash_value):
+    def _generate_post_data(self, cat, subject, content, post=None, numreponse=None, dest=None ):
+        category_values = self._get_category_values()
+
+        if cat not in category_values:
+            raise ValueError(f"La catégorie '{cat}' n'est pas valide. Les catégories valides sont {category_values}")
+        
+        self.cat = cat
+
         return {
-            "hash_check": hash_value,
+            "hash_check": self.hash_value,
+            "cat": self.cat,
+            "content_form": content,
+            "post": post,
+            "numreponse": numreponse,
+            "dest": dest,
+            "sujet": subject,
             "parents": "",
-            "post": "",
             "stickold": "",
             "new": "0",
-            "cat": "prive",
-            "numreponse": "",
             "numrep": "",
             "page": "1",
             "verifrequet": "1100",
@@ -116,12 +126,9 @@ class Hfr:
             "config": "hfr.inc",
             "pseudo": self.pseudo,
             "password": "",
-            "dest": dest,
-            "sujet": subject,
             "MsgIcon": "1",
             "search_smilies": "",
             "ColorUsedMem": "",
-            "content_form": content,
             "wysiwyg": "0",
             "submit": "Valider+votre+message",
             "signature": "1"
