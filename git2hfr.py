@@ -21,7 +21,9 @@ class Config:
             if value:
                 env_vars_dict[var] = value
             else:
-                raise EnvironmentError(f"Environment variable {var} is not set.")
+                #raise EnvironmentError(f"Environment variable {var} is not set.")
+                print(f"[ERROR] Environment variable {var} is not set.")
+                sys.exit(1)
 
         return env_vars_dict
 
