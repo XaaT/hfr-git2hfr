@@ -75,16 +75,11 @@ class Hfr:
             if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
                 print("[ERROR] Invalid credentials.")
             elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
-                profile_response = self.session.get(f"{self.BASE_URL}/user/editprofil.php?config=hardwarefr.inc")
-                profile_response.raise_for_status()
-
-                soup = BeautifulSoup(profile_response.text, 'html.parser')
-                pseudo_label = soup.find('td', class_='profilCase2', string=lambda s: 'Pseudo' in s)
-
-                if pseudo_label and pseudo_label.find_next_sibling('td').text.strip() == pseudo:
+                if self.session.cookies.get('md_user') == pseudo:
                     print("[INFO] Connection successful!")
                     self.pseudo = pseudo
                     self.is_authenticated = True
+                    self._get_hash_value()
                 else:
                     print("[WARNING] Login issues detected.")
             else:
