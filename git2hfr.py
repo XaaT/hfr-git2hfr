@@ -3,6 +3,7 @@ import re
 import os
 from bs4 import BeautifulSoup
 import argparse
+import sys
 
 class Config:
     def __init__(self):
@@ -144,9 +145,9 @@ if __name__ == "__main__":
 
         if not hfr.is_authenticated:
             print("[ERROR] Authentication failed. Exiting script.")
-            exit(1)
+            sys.exit(1)
 
         hfr.send_new_MP(args.user, args.subject, args.content)
     except EnvironmentError as e:
         print(e)
-        exit(1)
+        sys.exit(1)
