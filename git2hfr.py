@@ -37,6 +37,10 @@ class Hfr:
         self.session = requests.Session()
         self.is_authenticated = False
 
+    def _exit_with_error(self, message):
+        print(f"[ERROR] {message}")
+        sys.exit(1)
+
     def _get_hash_value(self):
         if self.is_authenticated == True:
             profile_response = self.session.get(f"{self.BASE_URL}/user/editprofil.php?config=hardwarefr.inc")
@@ -143,15 +147,37 @@ class Hfr:
         # TODO: Post editing manager
         # - Either one or more posts (first post(s))
 
-    def send_new_MP(self, dest, subject, content):
-        hash_value = self._get_hash_from_page(f"{self.BASE_URL}/message.php?config=hfr.inc&cat=prive&sond=&p=1&subcat=&dest={dest}&subcatgroup=0".format(dest))
-        post_data = self._build_post_data(dest, subject, content, hash_value)
-        
-        response = self.session.post(f"{self.BASE_URL}/bddpost.php", data=post_data)
-        if response.status_code == 200:
-            print("Message sent successfully!")
-        else:
-            print(f"Failed to send message. Received status code: {response.status_code}")
+def send_new_MP(self, dest, subject, content):
+    # Vérification préalable des entrées
+    if not content:
+        self._exit_with_error("Content is missing.")
+    if not subject:
+        self._exit_with_error("Subject is missing.")
+
+    post_data = self._generate_post_data(
+        cat="prive",
+        subject=subject,
+        content=content,
+        dest=dest
+    )
+    response = self.session.post(f"{self.BASE_URL}/bddpost.php", data=post_data)
+
+    error_messages = {
+        "Vous devez entrez un destinataire pour envoyer un message privé": "Destinataire missing.",
+        "Vous devez remplir tous les champs avant de poster ce message": "Content or subject missing.",
+        "Afin de prevenir les tentatives de flood, vous ne pouvez poster plus de 1 nouveaux sujets consécutifs dans un intervalle de 60 minutes": "Limit reached."
+    }
+
+    for error in error_messages:
+        if error in response.text:
+            self._exit_with_error(f"Server: {error_messages[error]}")
+
+    succeed_message = "Votre message a été posté avec succès !"
+    if succeed_message in response.text:
+        print(f"------\n{succeed_message}")
+        sys.exit(0)
+    else:
+        self._exit_with_error(response.text)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
