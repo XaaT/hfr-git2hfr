@@ -113,6 +113,7 @@ class Hfr:
             "numreponse": numreponse,
             "dest": dest,
             "sujet": subject,
+            "subcat": "394",
             "parents": "",
             "stickold": "",
             "new": "0",
