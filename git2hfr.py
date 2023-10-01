@@ -217,9 +217,12 @@ def edit_post(self, cat, post, numreponse, content):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
-    parser.add_argument('--user', type=str, required=True, help='Recipient username')
-    parser.add_argument('--subject', type=str, required=True, help='Message subject')
-    parser.add_argument('--content', type=str, required=True, help='Message content')
+    parser.add_argument('--cat', type=str, required=True, help='Forum categorie')
+    parser.add_argument('--subject', type=str, required=False, help='Message subject')
+    parser.add_argument('--content', type=str, required=False, help='Message content')
+    parser.add_argument('--post', type=int, required=False, help='Topic number')
+    parser.add_argument('--numreponse', type=int, required=False, help='Message number')
+    parser.add_argument('--dest', type=str, required=False, help='Message destinataire')
 
     args = parser.parse_args()
 
