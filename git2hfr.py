@@ -179,6 +179,42 @@ def send_new_MP(self, dest, subject, content):
     else:
         self._exit_with_error(response.text)
 
+def edit_post(self, cat, post, numreponse, content):
+    # Vérification préalable des entrées
+    if not cat:
+        self._exit_with_error("Category number is missing.")
+    if not content:
+        self._exit_with_error("Content is missing.")
+    if not post:
+        self._exit_with_error("Topic number is missing.")
+    if not numreponse:
+        self._exit_with_error("Message number is missing.")
+
+    post_data = self._generate_post_data(
+        cat=cat,
+        subject="caca",  # c'est un placeholder ?
+        content=content,
+        dest="",
+        post=post,
+        numreponse=numreponse
+    )
+    response = self.session.post(f"{self.BASE_URL}/bdd.php", data=post_data)
+
+    error_messages = {
+        "Vous n'avez pas les droits pour éditer ce message !": "Server: No rights to edit this message. Wrong message selected?",
+        "Ce message ne vous est pas destiné, désolé": "Server: This message is not for you. Wrong topic number?"
+    }
+
+    for error in error_messages:
+        if error in response.text:
+            self._exit_with_error(error_messages[error])
+
+    succeed_message = "Votre message a été édité avec succès !"
+    if succeed_message in response.text:
+        print(f"------\n{succeed_message}")
+    else:
+        self._exit_with_error(response.text)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
     parser.add_argument('--user', type=str, required=True, help='Recipient username')
