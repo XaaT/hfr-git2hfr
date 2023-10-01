@@ -140,10 +140,6 @@ class Hfr:
         # - Either to subject (new message)
         # - Either private (new private message or use of last known conversation)
 
-    #def edit_post() :
-        # TODO: Post editing manager
-        # - Either one or more posts (first post(s))
-
     def send_new_MP(self, dest, subject, content):
         # Vérification préalable des entrées
         if not content:
@@ -214,6 +210,17 @@ class Hfr:
             print(f"------\n{succeed_message}")
         else:
             self._exit_with_error(response.text)
+
+    def get_content(self, content_arg, file_arg, string_arg, github_arg):
+        if file_arg:
+            with open(file_arg, "r") as f:
+                return f.read()
+        elif string_arg:
+            return string_arg
+        elif github_arg:
+            return self.get_github_file_content(github_arg)
+        else:
+            return content_arg
 
 def cli():
     import argparse
