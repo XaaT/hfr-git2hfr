@@ -33,9 +33,10 @@ class Config:
 class Hfr:
     BASE_URL = "https://forum.hardware.fr"
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.session = requests.Session()
         self.is_authenticated = False
+        self.debug = debug
 
     def _exit_with_error(self, message):
         print(f"[ERROR] {message}")
@@ -160,6 +161,8 @@ class Hfr:
             content=content,
             dest=dest
         )
+        if self.debug:
+            print(f"Sending the following data for edit post: {post_data}")
         response = self.session.post(f"{self.BASE_URL}/bddpost.php", data=post_data)
 
         error_messages = {
@@ -198,6 +201,8 @@ class Hfr:
             post=post,
             numreponse=numreponse
         )
+        if self.debug:
+            print(f"Sending the following data for edit post: {post_data}")
         response = self.session.post(f"{self.BASE_URL}/bdd.php", data=post_data)
 
         error_messages = {
