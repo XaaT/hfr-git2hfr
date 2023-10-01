@@ -215,28 +215,77 @@ class Hfr:
         else:
             self._exit_with_error(response.text)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Send a message on HFR forum.')
-    parser.add_argument('--cat', type=str, required=True, help='Forum categorie')
-    parser.add_argument('--subject', type=str, required=False, help='Message subject')
-    parser.add_argument('--content', type=str, required=False, help='Message content')
-    parser.add_argument('--post', type=int, required=False, help='Topic number')
-    parser.add_argument('--numreponse', type=int, required=False, help='Message number')
-    parser.add_argument('--dest', type=str, required=False, help='Message destinataire')
+def cli():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="CLI interface for interacting with Hardware.fr forum.")
+
+    # Authentication
+    parser.add_argument("--login", nargs=2, metavar=("PSEUDO", "PASSWORD"), help="Login to the forum with pseudo and password.")
+    parser.add_argument("--auto-login", action="store_true", help="Automatically login using HFR_LOGIN and HFR_PASSWD environment variables.")
+
+    # Interaction with the forum
+    parser.add_argument("--send-mp", nargs=2, metavar=("DEST", "SUBJECT"), help="Send a private message.")
+    parser.add_argument("--post", nargs=2, metavar=("CAT", "SUBJECT"), help="Post a new topic in the specified category.")
+    parser.add_argument("--edit-post", nargs=3, metavar=("CAT", "POST_NUM", "RESPONSE_NUM"), help="Edit an existing post.")
+
+    # Content source
+    parser.add_argument("--content-file", metavar="FILE_PATH", help="Specify a local file as content source.")
+    parser.add_argument("--content-string", metavar="STRING", help="Specify a string as content source.")
+    parser.add_argument("--content-github", metavar="REPO_URL", help="Fetch content from a file in a GitHub repository.")
+
+    # Debug
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode to display detailed information.")
 
     args = parser.parse_args()
 
-    try:
-        config = Config()
-        hfr = Hfr()
-        hfr.login(config.get("HFR_LOGIN"), config.get("HFR_PASSWD"))
+    hfr = Hfr(debug=args.debug)
 
-        if not hfr.is_authenticated:
-            print("[ERROR] Authentication failed. Exiting script.")
-            sys.exit(1)
-
-        #hfr.send_new_MP(args.dest, args.subject, args.content)
-        hfr.edit_post(args.cat, args.post, args.numreponse, args.content)
-    except EnvironmentError as e:
-        print(e)
+    # Check if no arguments are provided and display help
+    if len(sys.argv) == 1:
+        parser.print_help()
         sys.exit(1)
+
+    # Check for auto-login argument and perform login if provided
+    if args.auto_login:
+        pseudo = os.environ.get("HFR_LOGIN")
+        password = os.environ.get("HFR_PASSWD")
+        if not pseudo or not password:
+            print("Error: HFR_LOGIN and HFR_PASSWD environment variables must be set for auto-login.")
+            sys.exit(1)
+        hfr.login(pseudo, password)
+
+    # Check for login argument and perform login if provided
+    elif args.login:
+        pseudo, password = args.login
+        hfr.login(pseudo, password)
+
+    # Determine content
+    content = hfr.get_content(
+        content_arg=None,
+        file_arg=args.content_file,
+        string_arg=args.content_string,
+        github_arg=args.content_github
+    )
+
+    if not content:
+      print("Error: No valid content provided. Please use --content-file, --content-string, or --content-github to specify the content.")
+      sys.exit(1)
+
+    # Check for send-mp argument and send a private message if provided
+    if args.send_mp:
+        dest, subject = args.send_mp
+        hfr.send_new_MP(dest, subject, content)
+
+    # Check for post argument and post a new topic if provided
+    elif args.post:
+        cat, subject = args.post
+        # TODO: Implement the logic to post a new topic
+
+    # Check for edit-post argument and edit a post if provided
+    elif args.edit_post:
+        cat, post_num, response_num = args.edit_post
+        hfr.edit_post(cat, post_num, response_num, content)
+
+if __name__ == "__main__":
+    cli()
