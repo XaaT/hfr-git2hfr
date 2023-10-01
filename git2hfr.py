@@ -21,9 +21,7 @@ class Config:
             if value:
                 env_vars_dict[var] = value
             else:
-                #raise EnvironmentError(f"Environment variable {var} is not set.")
-                print(f"[ERROR] Environment variable {var} is not set.")
-                sys.exit(1)
+                raise EnvironmentError(f"Environment variable {var} is not set.")
 
         return env_vars_dict
 
@@ -51,11 +49,9 @@ class Hfr:
                 self.hash_value = hash_input['value']
                 print(f"[INFO] Variable hash_value has been set: {self.hash_value}")
             else:
-                print("[ERROR] Could not extract hash value.")
-                sys.exit(1)
+                self._exit_with_error("Could not extract hash value.")
         else:
-            print("[ERROR] User is not authentificated")
-            sys.exit(1)
+            self._exit_with_error("User is not authenticated.")
 
     def _get_category_values(self):
         try:
@@ -78,7 +74,7 @@ class Hfr:
             response.raise_for_status()
 
             if "Votre mot de passe ou nom d'utilisateur n'est pas valide" in response.text:
-                print("[ERROR] Invalid credentials.")
+                raise ValueError("Invalid credentials.")
             elif "Vérification de votre identification..." in response.text or "Votre identification sur notre forum s'est déroulée avec succès." in response.text:
                 if self.session.cookies.get('md_user') == pseudo:
                     print("[INFO] Connection successful!")
@@ -91,7 +87,7 @@ class Hfr:
                 print("[WARNING] Unexpected response received. Login status unknown.")
 
         except requests.RequestException as e:
-            raise ConnectionError(f"[ERROR] Failed to connect: {str(e)}")
+            raise ConnectionError(f"Failed to connect: {str(e)}")
 
     def get_github_file_content(self, repo_url):
         if 'github.com' in repo_url and 'raw' not in repo_url:
@@ -178,7 +174,6 @@ class Hfr:
         succeed_message = "Votre message a été posté avec succès !"
         if succeed_message in response.text:
             print(f"------\n{succeed_message}")
-            sys.exit(0)
         else:
             self._exit_with_error(response.text)
 
