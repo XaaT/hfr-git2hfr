@@ -195,7 +195,7 @@ class Hfr:
 
         post_data = self._generate_post_data(
             cat=cat,
-            subject="caca",  # c'est un placeholder ?
+            subject=self.pseudo,  # Obligatoire de foutre un truc random sinon ça couine, saloperie de forum
             content=content,
             dest="",
             post=post,
