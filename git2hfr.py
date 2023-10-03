@@ -66,6 +66,10 @@ class Hfr:
             print(f"[ERROR] Failed to get category values: {str(e)}")
             return []
 
+    def _is_first_post_edit_page(soup):
+    hidden_subject_input = soup.find("input", {"name": "sujet", "type": "hidden"})
+    return hidden_subject_input is None  # If it's absent, it's likely the FP1
+
     def login(self, pseudo, password):
         form_data = { "pseudo": pseudo, "password": password }
 
