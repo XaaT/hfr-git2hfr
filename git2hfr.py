@@ -66,10 +66,6 @@ class Hfr:
             print(f"[ERROR] Failed to get category values: {str(e)}")
             return []
 
-    def _is_first_post_edit_page(soup):
-    hidden_subject_input = soup.find("input", {"name": "sujet", "type": "hidden"})
-    return hidden_subject_input is None  # If it's absent, it's likely the FP1
-
     def login(self, pseudo, password):
         form_data = { "pseudo": pseudo, "password": password }
 
@@ -101,7 +97,23 @@ class Hfr:
         response.raise_for_status()
         return response.text
 
-    def _generate_post_data(self, cat, subject, content, post=None, numreponse=None, dest=None ):
+    def identify_page_and_extract_subcat(self, html_content):
+        soup = BeautifulSoup(html_content, "html.parser")
+
+        # Check if "sujet" input is hidden
+        sujet_input = soup.find("input", {"name": "sujet"})
+        is_hidden = "hidden" in sujet_input.get("type", "") if sujet_input else False
+
+        # Check if the page is FP and extract "subcat" if it is
+        if not is_hidden:
+            subcat_input = soup.find('option', selected=True)
+            subcat_value = subcat_input['value'] if subcat_input else None
+            subject_name = sujet_input['value']
+            return True, subcat_value, subject_name
+        else:
+            return False, None, None
+
+    def _generate_post_data(self, cat, subject, content, post=None, numreponse=None, dest=None, subcat=None ):
         category_values = self._get_category_values()
 
         if cat not in category_values:
@@ -117,7 +129,7 @@ class Hfr:
             "numreponse": numreponse,
             "dest": dest,
             "sujet": subject,
-            "subcat": "394",
+            "subcat": subcat,
             "parents": "",
             "stickold": "",
             "new": "0",
@@ -178,28 +190,50 @@ class Hfr:
         else:
             self._exit_with_error(response.text)
 
-    def edit_post(self, cat, post, numreponse, content):
-        # Vérification préalable des entrées
-        if not cat:
-            self._exit_with_error("Category number is missing.")
-        if not content:
-            self._exit_with_error("Content is missing.")
-        if not post:
-            self._exit_with_error("Topic number is missing.")
-        if not numreponse:
-            self._exit_with_error("Message number is missing.")
+    def check_parameters(self, params):
+        for param_name, param_value in params.items():
+            if not param_value:
+                self._exit_with_error(f"{param_name} is missing.")
 
-        post_data = self._generate_post_data(
-            cat=cat,
-            subject=self.pseudo,  # Obligatoire de foutre un truc random sinon ça couine, saloperie de forum
-            content=content,
-            dest="",
-            post=post,
-            numreponse=numreponse
-        )
+    def edit_post(self, cat, post, numreponse, content):
+        # Check if the necessary parameters are provided
+        params = {"Category number": cat, "Content": content, "Topic number": post, "Message number": numreponse}
+        self.check_parameters(params)
+
+        # Build the URL for the editing page
+        edit_url = f"{self.BASE_URL}/message.php?config=hfr.inc&cat={cat}&post={post}&numreponse={numreponse}"
+
+        # Retrieve and parse the HTML of the editing page
+        edit_page_html = self.session.get(edit_url).text
+
+        # Identify the page type and extract "subcat" if it's a FP
+        is_fp, subcat, subject = self.identify_page_and_extract_subcat(edit_page_html)
+
+        # Edit the post
+        if is_fp:
+            post_data = self._generate_post_data(
+                cat=cat,
+                subject=subject,
+                content=content,
+                subcat=subcat,
+                dest="",
+                post=post,
+                numreponse=numreponse
+            )
+            response = self.session.post(f"{self.BASE_URL}/bdd.php", data=post_data)
+        else:
+            post_data = self._generate_post_data(
+                cat=cat,
+                subject=self.pseudo,  # Obligatoire de foutre un truc random sinon ça couine, saloperie de forum
+                content=content,
+                dest="",
+                post=post,
+                numreponse=numreponse
+            )
+            response = self.session.post(f"{self.BASE_URL}/bdd.php", data=post_data)
+
         if self.debug:
             print(f"Sending the following data for edit post: {post_data}")
-        response = self.session.post(f"{self.BASE_URL}/bdd.php", data=post_data)
 
         error_messages = {
             "Vous n'avez pas les droits pour éditer ce message !": "Server: No rights to edit this message. Wrong message selected?",
