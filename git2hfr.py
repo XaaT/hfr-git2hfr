@@ -47,7 +47,6 @@ class Hfr:
             hash_input = soup.find('input', {'name': 'hash_check'})
             if hash_input:
                 self.hash_value = hash_input['value']
-                print(f"[INFO] Variable hash_value has been set: {self.hash_value}")
             else:
                 self._exit_with_error("Could not extract hash value.")
         else:
