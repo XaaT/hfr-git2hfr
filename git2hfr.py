@@ -6,14 +6,13 @@ import argparse
 import sys
 
 class Config:
-    def __init__(self):
-        self.env_vars_list = [
-            "HFR_LOGIN",
-            "HFR_PASSWD"
-        ]
+    """Class to handle environment variables."""
+    def __init__(self, env_vars_list=None):
+        self.env_vars_list = env_vars_list or ["HFR_LOGIN", "HFR_PASSWD"]
         self.env_vars = self._get_env_vars()
 
     def _get_env_vars(self):
+        """Fetch the required environment variables."""
         env_vars_dict = {}
 
         for var in self.env_vars_list:
@@ -26,22 +25,27 @@ class Config:
         return env_vars_dict
 
     def get(self, key):
+        """Return the value of a specific environment variable."""
         return self.env_vars.get(key)
 
 class Hfr:
+    """Class to interact with the Hardware.fr forum."""
     BASE_URL = "https://forum.hardware.fr"
 
     def __init__(self, debug=False):
+        """Initialize the Hfr object."""
         self.session = requests.Session()
         self.is_authenticated = False
         self.debug = debug
 
     def _exit_with_error(self, message):
+        """Exit the script with a specified error message."""
         print(f"[ERROR] {message}")
         sys.exit(1)
 
     def _get_hash_value(self):
-        if self.is_authenticated == True:
+        """Extract hash value required for some actions on the forum."""
+        if self.is_authenticated:
             profile_response = self.session.get(f"{self.BASE_URL}/user/editprofil.php?config=hardwarefr.inc")
             soup = BeautifulSoup(profile_response.text, 'html.parser')
             hash_input = soup.find('input', {'name': 'hash_check'})
@@ -261,8 +265,7 @@ class Hfr:
             return content_arg
 
 def cli():
-    import argparse
-
+    """Main CLI function to interact with the Hardware.fr forum."""
     parser = argparse.ArgumentParser(description="CLI interface for interacting with Hardware.fr forum.")
 
     # Authentication
