@@ -1,0 +1,7 @@
+# Local python script
+local.*.py
+
+# Temporary dir and files
+tmp*
+tmp/
+*.swp
