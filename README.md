@@ -15,3 +15,7 @@
         ```
         > [!NOTE]
         > Pour ne pas garder en mémoire (`history`) un secret : ajouter un espace avant la commande `export`. Exemple : ` export HFR_PASSWD=UnMouton`
+
+## Legacy
+
+* Le script PHP antérieur est disponible sur la [branche legacy](https://github.com/XaaT/hfr-git2hfr/tree/legacy)
