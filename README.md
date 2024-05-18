@@ -13,6 +13,7 @@
         export HFR_LOGIN=Cule
         export HFR_PASSWD=UnMouton
         ```
+        
         > [!NOTE]
         > Pour ne pas garder en mémoire (`history`) un secret : ajouter un espace avant la commande `export`. Exemple : ` export HFR_PASSWD=UnMouton`
 
