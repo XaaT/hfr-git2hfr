@@ -4,27 +4,29 @@ import os
 from bs4 import BeautifulSoup
 import argparse
 import sys
+from dataclasses import dataclass, field
 
+@dataclass
 class Config:
     """Class to handle environment variables."""
-    def __init__(self, env_vars_list=None):
-        self.env_vars_list = env_vars_list or ["HFR_LOGIN", "HFR_PASSWD"]
+    env_vars_list: list[str] = field(default_factory=lambda: ["HFR_LOGIN", "HFR_PASSWD"])
+    env_vars: dict = field(init=False)
+
+    def __post_init__(self):
         self.env_vars = self._get_env_vars()
 
-    def _get_env_vars(self):
+    def _get_env_vars(self) -> dict:
         """Fetch the required environment variables."""
         env_vars_dict = {}
-
         for var in self.env_vars_list:
             value = os.getenv(var)
             if value:
                 env_vars_dict[var] = value
             else:
                 raise EnvironmentError(f"Environment variable {var} is not set.")
-
         return env_vars_dict
 
-    def get(self, key):
+    def get(self, key: str):
         """Return the value of a specific environment variable."""
         return self.env_vars.get(key)
 
