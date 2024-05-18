@@ -13,10 +13,18 @@ class Config:
     env_vars: dict = field(init=False)
 
     def __post_init__(self):
+        """Initialize the env_vars attribute after object creation."""
         self.env_vars = self._get_env_vars()
 
     def _get_env_vars(self) -> dict:
-        """Fetch the required environment variables."""
+        """Fetch the required environment variables.
+
+        Returns:
+            dict: A dictionary containing the environment variables.
+
+        Raises:
+            EnvironmentError: If any required environment variable is not set.
+        """
         env_vars_dict = {}
         for var in self.env_vars_list:
             value = os.getenv(var)
@@ -27,7 +35,14 @@ class Config:
         return env_vars_dict
 
     def get(self, key: str):
-        """Return the value of a specific environment variable."""
+        """Return the value of a specific environment variable.
+
+        Args:
+            key (str): The name of the environment variable.
+
+        Returns:
+            The value of the specified environment variable.
+        """
         return self.env_vars.get(key)
 
 class Hfr:
