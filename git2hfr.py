@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 @dataclass
 class Config:
     """Class to handle environment variables."""
-    env_vars_list: list[str] = field(default_factory=lambda: ["HFR_LOGIN", "HFR_PASSWD"])
+    required_vars: list[str] = field(default_factory=lambda: ["HFR_LOGIN", "HFR_PASSWD"])
     env_vars: dict = field(init=False)
 
     def __post_init__(self):
@@ -26,7 +26,7 @@ class Config:
             EnvironmentError: If any required environment variable is not set.
         """
         env_vars_dict = {}
-        for var in self.env_vars_list:
+        for var in self.required_vars:
             value = os.getenv(var)
             if value:
                 env_vars_dict[var] = value
